@@ -32,14 +32,14 @@ class DBStorage:
         if KNS_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
-        Session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
-        self.__session = Session()
 
     def all(self, cls=None):
         """query on the current database session"""
         new_dict = {}
         for clss in classes:
             if cls is None or cls is classes[clss] or cls is clss:
+                if self.__session is None:
+                    self.reload()
                 print(f"{self.__session}")
                 objs = self.__session.query(classes[clss]).all()
                 for obj in objs:

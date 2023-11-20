@@ -9,9 +9,13 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from models import storage
 from models.user import User
+from flask_wtf.csrf import CSRFProtect
+from hashlib import md5
 
 
 app = Flask(__name__)
+app.config['WTF_CSRF_ENABLED'] = False
+csrf = CSRFProtect(app)
 cors = CORS(app)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
@@ -30,16 +34,23 @@ def not_found(error):
 @app.route("/sign_up", methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
+    print(f"email= {form.email.data}")
+    print(f"password= {form.password.data}")
+    print(f"username= {form.username.data}")
+    hash_password = md5((form.password.data).encode()).hexdigest()
+    print(f"hash_password= {hash_password}")
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data,
-                    password=form.password.data)
+        dic = {"email": form.email.data, "password": form.password.data, "user_name": form.username.data}
+        print(f"data: {dic}")
+        user = User(**dic)
+        # user = User(user_name=form.username.data, email=form.email.data, password=form.password.data)
         user.save()
         return jsonify({'message': 'Account created successfuly'})
+    
     else:
         for field, errors in form.errors.items():
             errors = {field: [str(error) for error in errors]}
         return jsonify({'message': 'Validation failed', 'errors': errors}), 400
-
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -48,14 +59,13 @@ def login():
     print(all_users)
     print(form.email.data)
     for user in all_users:
-        print(f"user mail is {user.password}")
+        print(f"user mail is {user.email}")
         if user.email == form.email.data:
-            if user.password == form.password.data:
+            if user.password == md5((form.password.data).encode()).hexdigest():
                 return jsonify({'message': 'success'})
             else:
                 return jsonify({'message': 'password not correct'})
-        else:
-            return jsonify({'message': 'email not found'})
+    return jsonify({'message': 'email not found'})
 
 if __name__ == "__main__":
     """ Main Function """
