@@ -45,7 +45,7 @@ def signup():
         user = User(**dic)
         # user = User(user_name=form.username.data, email=form.email.data, password=form.password.data)
         user.save()
-        return jsonify({'message': 'Account created successfuly'})
+        return jsonify({'message': 'Account created successfuly', "id": user.id})
     
     else:
         for field, errors in form.errors.items():
@@ -62,7 +62,7 @@ def login():
         print(f"user mail is {user.email}")
         if user.email == form.email.data:
             if user.password == md5((form.password.data).encode()).hexdigest():
-                return jsonify({'message': 'success'})
+                return jsonify({'message': 'success', "id": user.id})
             else:
                 return jsonify({'message': 'password not correct'})
     return jsonify({'message': 'email not found'})

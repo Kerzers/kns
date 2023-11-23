@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """ objects that handle all default RestFul API actions for Teachers """
 from models.teacher import Teacher
+from models.user import User
+from models.review import Review
 from models import storage
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
@@ -11,7 +13,6 @@ def get_teachers():
     """
     Retrieves the list of all teacher objects
     """
-    print("inside get teachers")
     all_teachers = storage.all(Teacher).values()
     list_teachers= []
     for teacher in all_teachers:
@@ -40,6 +41,11 @@ def delete_teacher(teacher_id):
     if not teacher:
         abort(404)
 
+    reviews = storage.all(Review)
+    related_reviews = [review for review in reviews.values() if review.teacher_id == teacher.id]
+    for review in related_reviews:
+        storage.delete(review)
+
     storage.delete(teacher)
     storage.save()
 
@@ -54,13 +60,27 @@ def post_teacher():
     if not request.get_json():
         abort(400, description="Not a JSON")
 
-    if 'course' not in request.get_json():
+    if 'user_id' not in request.get_json():
+        abort(400, description="Missing user_id")
+    if 'course_name' not in request.get_json():
         abort(400, description="Missing course")
     if 'description' not in request.get_json():
         abort(400, description="Missing description")
 
     data = request.get_json()
-    instance = Teacher(**data)
+    user = storage.get(User, data['user_id'])
+    if not user:
+        abort(404)
+    teacher_data = {'user_id': data['user_id'],
+                    'description': data['description'],
+                    'course_name': data['course_name'],
+                    'user_name': user.user_name,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'location': user.location
+    }
+
+    instance = Teacher(**teacher_data)
     instance.save()
     return make_response(jsonify(instance.to_dict()), 201)
 

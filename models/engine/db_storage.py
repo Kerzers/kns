@@ -5,11 +5,12 @@ from models.base_model import Base
 from models.review import Review
 from models.user import User
 from models.teacher import Teacher
+from models.course import Course
 from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-classes = {"User": User, "Teacher": Teacher, "Review": Review}
+classes = {"User": User, "Teacher": Teacher, "Review": Review, "course": Course}
 
 
 class DBStorage:
@@ -32,7 +33,6 @@ class DBStorage:
         if KNS_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
-
     def all(self, cls=None):
         """query on the current database session"""
         new_dict = {}
@@ -40,7 +40,7 @@ class DBStorage:
             if cls is None or cls is classes[clss] or cls is clss:
                 if self.__session is None:
                     self.reload()
-                print(f"{self.__session}")
+                print(f"self_ssession inside all method {self.__session}")
                 objs = self.__session.query(classes[clss]).all()
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id

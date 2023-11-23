@@ -21,7 +21,7 @@ class BaseModel:
         """Initialization of the base model"""
         if kwargs:
             for key, value in kwargs.items():
-                if key != "__class__":
+                if key != "__class__" and key != "_sa_instance_state":
                     setattr(self, key, value)
             if kwargs.get("created_at", None) and type(self.created_at) is str:
                 self.created_at = datetime.strptime(kwargs["created_at"], time)
@@ -33,6 +33,7 @@ class BaseModel:
                 self.updated_at = datetime.utcnow()
             if kwargs.get("id", None) is None:
                 self.id = str(uuid.uuid4())
+            print(f"this is kwargs{kwargs}")
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.utcnow()

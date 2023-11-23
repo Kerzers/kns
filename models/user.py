@@ -13,12 +13,12 @@ from hashlib import md5
 class User(BaseModel, Base):
     """Representation of a user """
     __tablename__ = 'users'
-    email = Column(String(128), nullable=False)
-    password = Column(String(256), nullable=False)
-    user_name = Column(String(128), nullable=False)
-    first_name = Column(String(128), nullable=True)
-    last_name = Column(String(128), nullable=True)
-    location = Column(String(128), nullable=True)
+    email = Column(String(60), nullable=False)
+    password = Column(String(128), nullable=False)
+    user_name = Column(String(60), nullable=False)
+    first_name = Column(String(60), nullable=True)
+    last_name = Column(String(60), nullable=True)
+    location = Column(String(60), nullable=True)
 
     teachers = relationship("Teacher", backref="user")
     reviews = relationship("Review", backref="user")
