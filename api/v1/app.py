@@ -43,7 +43,6 @@ def signup():
         dic = {"email": form.email.data, "password": form.password.data, "user_name": form.username.data}
         print(f"data: {dic}")
         user = User(**dic)
-        # user = User(user_name=form.username.data, email=form.email.data, password=form.password.data)
         user.save()
         return jsonify({'message': 'Account created successfuly', "id": user.id})
     

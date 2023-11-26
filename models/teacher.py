@@ -14,7 +14,7 @@ class Teacher(BaseModel, Base):
     first_name = Column(String(60))
     last_name = Column(String(60))
     location = Column(String(60))
-    description = Column(String(1024), nullable=False)
+    description = Column(String(4096), nullable=False)
     course_name = Column(String(60), ForeignKey('courses.name'))
     course = relationship('Course', back_populates='teachers')
     reviews = relationship('Review', back_populates='teachers', cascade='all, delete-orphan')

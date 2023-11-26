@@ -75,6 +75,7 @@ def post_review(teacher_id):
     if user.id == teacher.user_id:
         abort(400, description="You can not review yourself!")
     data['teacher_id'] = teacher_id
+    data['username'] = user.user_name 
     instance = Review(**data)
     instance.save()
     return make_response(jsonify(instance.to_dict()), 201)

@@ -25,14 +25,14 @@ class SignupForm(FlaskForm):
         all_users = storage.all(User).values()
         for user in all_users:
             if username.data == user.user_name:
-                raise ValidationError('That username is taken. Please choose a different one.')
+                raise ValidationError('Username taken. Please choose a different one.')
 
     def validate_email(self, email):
         """Check if the email is already in use"""
         all_users = storage.all(User).values()
         for user in all_users:
             if email.data == user.email:
-                raise ValidationError('That email is taken. Please choose a different one.')
+                raise ValidationError('Email already exists')
 
 class LoginForm(FlaskForm):
     """Class to handle login form"""
