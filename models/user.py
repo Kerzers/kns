@@ -19,6 +19,8 @@ class User(BaseModel, Base):
     first_name = Column(String(60), nullable=True)
     last_name = Column(String(60), nullable=True)
     location = Column(String(60), nullable=True)
+    user_discord= Column(String(60), nullable=True)
+    user_wtsp = Column(String(60), nullable=True)
 
     teachers = relationship("Teacher", backref="user")
     reviews = relationship("Review", backref="user")

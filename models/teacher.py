@@ -14,6 +14,10 @@ class Teacher(BaseModel, Base):
     first_name = Column(String(60))
     last_name = Column(String(60))
     location = Column(String(60))
+    user_email = Column(String(60))
+    user_discord = Column(String(60))
+    user_wtsp = Column(String(60))
+
     description = Column(String(4096), nullable=False)
     course_name = Column(String(60), ForeignKey('courses.name'))
     course = relationship('Course', back_populates='teachers')
