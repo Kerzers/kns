@@ -7,7 +7,6 @@ from models import storage
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
-
 @app_views.route('/teachers', methods=['GET'], strict_slashes=False)
 def get_teachers():
     """
@@ -106,3 +105,31 @@ def put_teacher(teacher_id):
             setattr(teacher, key, value)
     storage.save()
     return make_response(jsonify(teacher.to_dict()), 200)
+
+@app_views.route('/teachers_search', methods=['POST'], strict_slashes=False)
+def teachers_search():
+    """
+    Retrieves all Teacher objects depending of the course name of the request
+    """
+
+    if request.get_json() is None:
+        abort(400, description="Not a JSON")
+
+    data = request.get_json()
+    list_teachers = []
+
+    if 'course_name' in data:
+        course_name = data['course_name']
+        all_teachers = storage.all(Teacher).values()
+
+        # Filter teachers based on the course name
+        for teacher in all_teachers:
+            if course_name in teacher.course_name:
+                list_teachers.append(teacher.to_dict())
+        return jsonify(list_teachers)
+
+    # If 'course_name' is not provided, return all teachers
+    all_teachers = storage.all(Teacher).values()
+    for teacher in all_teachers:
+        list_teachers.append(teacher.to_dict())
+    return jsonify(list_teachers)
