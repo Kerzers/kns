@@ -7,26 +7,25 @@ from models import storage
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
+@app_views.route('/teachers/<teacher_id>', methods=['GET'], strict_slashes=False)
 @app_views.route('/teachers', methods=['GET'], strict_slashes=False)
-def get_teachers():
+def get_teachers(teacher_id=None):
     """
     Retrieves the list of all teacher objects
     """
+    storage.reload()
     all_teachers = storage.all(Teacher).values()
+    storage.close()
     list_teachers= []
     for teacher in all_teachers:
         list_teachers.append(teacher.to_dict())
-    return jsonify(list_teachers)
-
-
-@app_views.route('/teachers/<teacher_id>', methods=['GET'], strict_slashes=False)
-def get_teacher(teacher_id):
-    """ Retrieves an teacher """
-    teacher = storage.get(Teacher, teacher_id)
-    if not teacher:
+    if teacher_id is None:
+        return jsonify(list_teachers)
+    else:
+        for elmt in list_teachers:
+           if elmt["id"] == teacher_id:
+               return jsonify(elmt)
         abort(404)
-
-    return jsonify(teacher.to_dict())
 
 
 @app_views.route('/teachers/<teacher_id>', methods=['DELETE'],
@@ -35,9 +34,11 @@ def delete_teacher(teacher_id):
     """
     Deletes a teacher Object
     """
+    storage.reload()
     teacher = storage.get(Teacher, teacher_id)
 
     if not teacher:
+        storage.close()
         abort(404)
 
     reviews = storage.all(Review)
@@ -47,7 +48,7 @@ def delete_teacher(teacher_id):
 
     storage.delete(teacher)
     storage.save()
-
+    storage.close()
     return make_response(jsonify({}), 200)
 
 
@@ -67,8 +68,11 @@ def post_teacher():
         abort(400, description="Missing description")
 
     data = request.get_json()
+
+    storage.reload()
     user = storage.get(User, data['user_id'])
     if not user:
+        storage.close()
         abort(404)
     teacher_data = {'user_id': data['user_id'],
                     'description': data['description'],
@@ -85,6 +89,7 @@ def post_teacher():
 
     instance = Teacher(**teacher_data)
     instance.save()
+    storage.close()
     return make_response(jsonify(instance.to_dict()), 201)
 
 
@@ -93,12 +98,15 @@ def put_teacher(teacher_id):
     """
     Updates a teacher
     """
+    storage.reload()
     teacher = storage.get(Teacher, teacher_id)
 
     if not teacher:
+        storage.close()
         abort(404)
 
     if not request.get_json():
+        storage.close()
         abort(400, description="Not a JSON")
 
     ignore = ['id', 'created_at', 'updated_at']
@@ -108,6 +116,7 @@ def put_teacher(teacher_id):
         if key not in ignore:
             setattr(teacher, key, value)
     storage.save()
+    storage.close()
     return make_response(jsonify(teacher.to_dict()), 200)
 
 @app_views.route('/teachers_search', methods=['POST'], strict_slashes=False)
@@ -122,18 +131,22 @@ def teachers_search():
     data = request.get_json()
     list_teachers = []
 
+    storage.reload()
     if 'course_name' in data:
         course_name = data['course_name']
+
         all_teachers = storage.all(Teacher).values()
 
         # Filter teachers based on the course name
         for teacher in all_teachers:
             if course_name in teacher.course_name:
                 list_teachers.append(teacher.to_dict())
+        storage.close()
         return jsonify(list_teachers)
 
     # If 'course_name' is not provided, return all teachers
     all_teachers = storage.all(Teacher).values()
     for teacher in all_teachers:
         list_teachers.append(teacher.to_dict())
+    storage.close()
     return jsonify(list_teachers)
