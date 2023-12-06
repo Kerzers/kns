@@ -6,33 +6,29 @@ from models import storage
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
-
-@app_views.route('/users', methods=['GET'], strict_slashes=False)
-def get_users():
-    """
-    Retrieves the list of all user objects
-    """
-    storage.reload()
-    all_users = storage.all(User).values()
-    storage.close()
-    list_users = []
-    for user in all_users:
-        list_users.append(user.to_dict())
-    storage.close()
-    return jsonify(list_users)
-
-
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
-def get_user(user_id):
-    """ Retrieves an user """
-    storage.reload()
-    user = storage.get(User, user_id)
-    if not user:
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
+def get_users(user_id=None):
+    """
+    Retrieves the list of all user objects or a user
+    """
+    try:
+        storage.reload()
+        all_users = storage.all(User).values()
+        list_users = [user.to_dict() for user in all_users]
+
+        if user_id is None:
+            return jsonify(list_users)
+        else:
+            for elmt in list_users:
+                if elmt["id"] == user_id:
+                    return jsonify(elmt)
+            abort(404)
+    except Exception as e:
+        storage.rollback()
+        abort(400, description=str(e))
+    finally:
         storage.close()
-        abort(404)
-
-    return jsonify(user.to_dict())
-
 
 @app_views.route('/users/<user_id>', methods=['DELETE'],
                  strict_slashes=False)
@@ -40,16 +36,20 @@ def delete_user(user_id):
     """
     Deletes a user Object
     """
-    storage.reload()
-    user = storage.get(User, user_id)
+    try:
+        storage.reload()
+        user = storage.get(User, user_id)
 
-    if not user:
+        if not user:
+            abort(404)
+
+        storage.delete(user)
+        storage.save()
+    except Exception as e:
+        storagerollback()
+        abort(400, description=str(e))
+    finally:
         storage.close()
-        abort(404)
-
-    storage.delete(user)
-    storage.save()
-    storage.close()
 
     return make_response(jsonify({}), 200)
 
@@ -103,7 +103,7 @@ def put_user(user_id):
         storage.save()
         return make_response(jsonify(user.to_dict()), 200)
     except Exception as e:
-        print(f"An error occurred: {e}")
-        abort(500)
+        storage.rollback()
+        abort(400, description=str(e))
     finally:
         storage.close()

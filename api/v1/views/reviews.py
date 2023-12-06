@@ -23,12 +23,19 @@ def get_reviews():
 @app_views.route('/teachers/<teacher_id>/reviews', methods=['GET'], strict_slashes=False)
 def get_review(teacher_id):
     """ Retrieves the list of reviews of a teacher"""
-    teacher = storage.get(Teacher, teacher_id)
-    if not teacher:
-        abort(404)
+    try:
+        storage.reload()
+        teacher = storage.get(Teacher, teacher_id)
+        if not teacher:
+            abort(404)
     
-    reviews = [review.to_dict() for review in teacher.reviews]
-    return jsonify(reviews)
+        reviews = [review.to_dict() for review in teacher.reviews]
+        return jsonify(reviews)
+    except Exception as e:
+        storage.rollback()
+        abort(400, description=str(e))
+    finally:
+        storage.close()
 
 
 @app_views.route('/reviews/<review_id>', methods=['DELETE'],
@@ -53,31 +60,38 @@ def post_review(teacher_id):
     """
     Creates a review for a teacher
     """
-    if not request.get_json():
-        abort(400, description="Not a JSON")
+    try:
+        if not request.get_json():
+            abort(400, description="Not a JSON")
 
-    if 'user_id' not in request.get_json():
-        abort(400, description="Missing user_id")
-    if 'stars' not in request.get_json():
-        abort(400, description="Missing stars")
-    if 'text' not in request.get_json():
-         abort(400, description="Missing review")
+        if 'user_id' not in request.get_json():
+            abort(400, description="Missing user_id")
+        if 'stars' not in request.get_json():
+            abort(400, description="Missing stars")
+        if 'text' not in request.get_json():
+            abort(400, description="Missing review")
  
-    data = request.get_json()
-    user = storage.get(User, data['user_id'])
-    if not user:
-        abort(404)
+        data = request.get_json()
+        user = storage.get(User, data['user_id'])
+        if not user:
+            abort(404)
 
-    teacher = storage.get(Teacher, teacher_id)
-    if not teacher:
-        abort(404)
+        teacher = storage.get(Teacher, teacher_id)
+        if not teacher:
+            abort(404)
 
-    if user.id == teacher.user_id:
-        abort(400, description="You can not review yourself!")
-    data['teacher_id'] = teacher_id
-    data['username'] = user.user_name 
-    instance = Review(**data)
-    instance.save()
+        if user.id == teacher.user_id:
+            abort(400, description="You can not review yourself!")
+        data['teacher_id'] = teacher_id
+        data['username'] = user.user_name 
+        instance = Review(**data)
+        instance.save()
+    except Exception as e:
+        storage.rollback()
+        abort(400, description=str(e))
+    finally:
+        storage.close()
+
     return make_response(jsonify(instance.to_dict()), 201)
 
 

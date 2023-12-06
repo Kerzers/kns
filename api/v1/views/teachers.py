@@ -169,4 +169,4 @@ def teachers_search():
         storage.rollback()
         abort(400, description=str(e))
     finally:
-            storage.close()
+        storage.close()
