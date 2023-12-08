@@ -5,14 +5,14 @@ To take a look in our project, you can visit this website: https://houseofwisdom
 
 ## Overview
 1. **Technologies**
-2. **APIs and Methods**
+2. **APIs**
 3. **Installation**
 4. **Usage**
 5. **Contributors**
 6. **License**
 
 ## Technologies
-**Backend**
+***Backend***
 - **Flask**: Web framework in Python.
 - **MySQL**: Open-source relational database management system.
 
@@ -32,10 +32,15 @@ Libraries
 
 5. **UUID**
    - *Description*: Generates UUIDs.
-**Frontend**
 
-**Web server**
+***Frontend***
+
+***Web server***
+- **Nginx**: Open-source reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP protocols.
+- **Gunicorn**: Python WSGI HTTP Server for UNIX.
 ## APIs
+
+
 ##Installation
 
 Getting Started
@@ -45,8 +50,7 @@ Getting Started
 - Add list of courses in the database by this command: cat add_courses | sudo mysql
 
 ## Usage
-1. Run the Flask application: `python app.py`.
-2. Access the backend API endpoints for the House of Wisdom website.
+1. Access the backend API endpoints for the House of Wisdom website by using the routes if you want to tested locally.
 
 ## Contributors
 - Ahlame Ahra - linkedin.com/in/ahlame-ahra-8a5b4695
