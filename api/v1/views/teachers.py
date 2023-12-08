@@ -93,8 +93,6 @@ def post_teacher():
                         'user_wtsp': user.user_wtsp,
                         'location': user.location
         }   
-        print(f"this is teacher data {teacher_data}")
-
         instance = Teacher(**teacher_data)
         instance.save()
     except Exception as e:

@@ -24,24 +24,15 @@ app.register_blueprint(app_views)
 @app.errorhandler(404)
 def not_found(error):
     """ 404 Error
-    ---
-    responses:
-      404:
-        description: a resource was not found
     """
     return make_response(jsonify({'error': "Not found"}), 404)
 
 @app.route("/sign_up", methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
-    print(f"email= {form.email.data}")
-    print(f"password= {form.password.data}")
-    print(f"username= {form.username.data}")
     hash_password = md5((form.password.data).encode()).hexdigest()
-    print(f"hash_password= {hash_password}")
     if form.validate_on_submit():
         dic = {"email": form.email.data, "password": form.password.data, "user_name": form.username.data}
-        print(f"data: {dic}")
         user = User(**dic)
         user.save()
         return jsonify({'message': 'Account created successfuly', "id": user.id})
@@ -55,10 +46,7 @@ def signup():
 def login():
     form = LoginForm()
     all_users = storage.all(User).values()
-    print(all_users)
-    print(form.email.data)
     for user in all_users:
-        print(f"user mail is {user.email}")
         if user.email == form.email.data:
             if user.password == md5((form.password.data).encode()).hexdigest():
                 return jsonify({'message': 'success', "id": user.id})
