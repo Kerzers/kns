@@ -1,15 +1,8 @@
-# House of Wisdom Website
+# House of Wisdom Website - Backend directory
 At House Of Wisdom, we believe in the power of education to transform lives, and our Portfolio Project is dedicated to facilitating meaningful connections between Alx students seeking academic support and other Alx students eager to share their expertise
 
 To take a look in our project, you can visit this website: https://houseofwisdom.vercel.app/
 
-## Overview
-1. **Technologies**
-2. **APIs**
-3. **Installation**
-4. **Usage**
-5. **Contributors**
-6. **License**
 
 ## Technologies
 ***Backend***
@@ -33,31 +26,8 @@ Libraries
 5. **UUID**
    - *Description*: Generates UUIDs.
 
-***Frontend***
 
 ***Web server***
 - **Nginx**: Open-source reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP protocols.
 - **Gunicorn**: Python WSGI HTTP Server for UNIX.
-## APIs
-
-
-##Installation
-
-Getting Started
-- Make sure to install the required dependencies by running `setup.sh`.
-- Setup the database by this command: cat setup_db | sudo mysql
-- Run the Flask application: `run_app.py`
-- Add list of courses in the database by this command: cat add_courses | sudo mysql
-
-## Usage
-1. Access the backend API endpoints for the House of Wisdom website by using the routes if you want to tested locally.
-
-## Contributors
-- Ahlame Ahra - linkedin.com/in/ahlame-ahra-8a5b4695
-- Omar El Hamrani - 
-
-## License
-This project is licensed under the [License Name] - see the [LICENSE](LICENSE) file for details.
-
----
 
