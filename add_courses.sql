@@ -6,7 +6,7 @@ INSERT INTO courses (name) VALUES
 ('Javascript'),
 ('PHP'),
 ('Bash'),
-('MySQL'),
+('SQL'),
 ('Git'),
 ('Java'),
 ('React'),
