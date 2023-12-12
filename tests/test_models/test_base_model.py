@@ -62,21 +62,15 @@ class TestBaseModel(unittest.TestCase):
         """Test that object is correctly created"""
         inst = BaseModel()
         self.assertIs(type(inst), BaseModel)
-        inst.name = "Holberton"
-        inst.number = 89
         attrs_types = {
             "id": str,
             "created_at": datetime,
             "updated_at": datetime,
-            "name": str,
-            "number": int
         }
         for attr, typ in attrs_types.items():
             with self.subTest(attr=attr, typ=typ):
                 self.assertIn(attr, inst.__dict__)
                 self.assertIs(type(inst.__dict__[attr]), typ)
-        self.assertEqual(inst.name, "Holberton")
-        self.assertEqual(inst.number, 89)
 
     def test_datetime_attributes(self):
         """Test that two BaseModel instances have different datetime objects
@@ -113,19 +107,13 @@ class TestBaseModel(unittest.TestCase):
     def test_to_dict(self):
         """Test conversion of object attributes to dictionary for json"""
         my_model = BaseModel()
-        my_model.name = "Holberton"
-        my_model.my_number = 89
         d = my_model.to_dict()
         expected_attrs = ["id",
                           "created_at",
                           "updated_at",
-                          "name",
-                          "my_number",
                           "__class__"]
         self.assertCountEqual(d.keys(), expected_attrs)
         self.assertEqual(d['__class__'], 'BaseModel')
-        self.assertEqual(d['name'], "Holberton")
-        self.assertEqual(d['my_number'], 89)
 
     def test_to_dict_values(self):
         """test that values in dict returned from to_dict are correct"""

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-"""
-Contains the TestDBStorage classes
-"""
+"""Contains the TestDBStorage classes"""
+
 
 from datetime import datetime
 import models
